@@ -1,0 +1,57 @@
+#!/bin/bash
+# shellcheck disable=SC2128
+
+###############################################################################
+#  Install essential packages. When this script is sourced instead of being   #
+#  executed it only defines array variables with the packages that should be  #
+#   installed, leaving the choice of package managers and flags to the user.  #
+#                Optional Dependencies: sudo, pacman, yay, pip                #
+###############################################################################
+
+PKG=(
+  awesome ranger neovim tmux ncmpcpp mutt weechat conky when
+  qutebrowser alacritty
+
+  keepassxc # Required by: mutt  weechat
+  python-websocket-client # Required by: weechat
+  bash-language-server lua-language-server texlab pyright # Required by: neovim
+  python-debugpy # Required by: neovim
+  xorg-xinit scrot redshift mpv # Required by: awesome
+  xorg-xrandr # Required by: awesome  conky
+  ueberzug # Required by: ranger
+  bash-completion fzf ripgrep # Required by: bash
+  python-adblock # Required by: qutebrowser
+  gtk-engine-murrine # Required by: theme
+
+  ttf-iosevka-nerd ttc-iosevka-ss09 ttc-iosevka-aile ttc-iosevka-etoile
+)
+
+AUR=(
+  ptpython qpdfview
+
+  # gruvbox theme
+  gruvbox-plus-icon-theme
+  colloid-gruvbox-gtk-theme-git
+  xcursor-simp1e-gruvbox-dark
+
+  absolutely-proprietary # Required by: conky
+  pandoc-bin mutt-ics # Required by: mutt
+  bash-complete-alias # Required by: bash
+  qt5-styleplugins # Required by: theme
+  dragon-drop # Required by: ranger
+  ltex-ls-plus-bin # Required by: neovim
+  physlock # Required by: awesome
+)
+
+PIP=(
+  pypandoc pynliner # Required by: mutt
+)
+
+# make this script a modulino, i.e., install packages automatically when it is
+# run instead of being sourced
+if [[ "$BASH_SOURCE" == "$0" ]]; then
+  set -o errexit
+  sudo pacman -S --needed "${PKG[@]}"
+  yay -S --aur --needed --removemake "${AUR[@]}"
+  pip install "${PIP[@]}" --user
+fi

@@ -1,0 +1,12 @@
+[submodule "modules/bling"]
+	path = modules/bling
+	url = https://github.com/garado/bling.git
+[submodule "modules/color"]
+	path = modules/color
+	url = https://github.com/andOrlando/color.git
+[submodule "modules/keynav"]
+	path = modules/keynav
+	url = https://github.com/garado/awesome-keynav.git
+[submodule "modules/rubato"]
+	path = modules/rubato
+	url = https://github.com/andOrlando/rubato.git

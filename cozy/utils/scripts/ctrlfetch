@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# trying to reduce the number of async calls by putting these
+# in one script vs. making a bunch of separate easy_async_with_shells
+
+# os 
+os=$(hostnamectl | grep 'Operating System: ')
+os=$(echo $os | sed -e s/^"Operating System: "//)
+os=$(echo $os | sed -e s/" Linux"//)
+echo "os:$os"
+
+# wm
+echo "wm:awesome"
+
+# packages
+pkg=$(pacman -Q | wc -l)
+aur_pkgs=$(pacman -Qem | wc -l)
+com_pkgs=$(( $pkg - $aur_pkgs ))
+echo "pkg:$pkg"
+
+# uptime
+up=$(uptime -p)
+up=$(echo $up | sed -e s/^"up "//g)
+up=$(echo $up | sed -e s/" day"/"d"/g)
+up=$(echo $up | sed -e s/" hour"/"h"/g)
+up=$(echo $up | sed -e s/" minute"/"m"/g)
+up=$(echo $up | sed -e s/","//g)
+up=$(echo $up | sed -e s/"s"//g)
+echo "up:$up"
+
+#host
+host=$(cat /etc/hostname)
+echo "host:$host"

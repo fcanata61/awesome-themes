@@ -1,0 +1,130 @@
+#!/bin/bash
+
+###############################################################################
+#   Launch garbage proprietary programs like Zoom or i686 only applications   #
+#  like Steam in a systemd-nspawn container to keep the main system nice and  #
+#     clean. The container is assumed to be on an encrypted block device.     #
+###############################################################################
+
+set -o errexit
+user=steam
+label=garbage
+mount_path=/mnt/$label
+block_device=$(findfs LABEL=$label-crypt)
+export SUDO_ASKPASS=${SUDO_ASKPASS:-/usr/lib/git-core/git-gui--askpass}
+
+function unlock_device(){
+  if [[ ! -b "/dev/mapper/$label" ]]; then
+    if [[ -t 0 ]]; then
+      cryptsetup open "$block_device" "$label"
+    else
+      local message="Enter passphrase for $block_device:"
+      cryptsetup open "$block_device" "$label" <<<"$($SUDO_ASKPASS "$message")"
+    fi
+  fi
+}
+
+function mount_device(){
+  if ! mountpoint -q "$mount_path"; then
+    mkdir -p "$mount_path"
+    mount "/dev/mapper/$label" "$mount_path"
+  fi
+}
+
+function umount_device(){
+  if mountpoint -q "$mount_path"; then
+    umount "$mount_path"
+    rmdir "$mount_path"
+  fi
+}
+
+function is_running(){
+  if [[ ! $(machinectl --property=State show "$label" 2> /dev/null) = "State=running" ]]; then
+    return 1
+  fi
+}
+
+function notify_status(){
+  if is_running; then
+    local message="The garbage container is still running!"
+  else
+    local message="The garbage container is offline!"
+  fi
+  if [[ -t 1 ]]; then
+    echo "$message"
+  else
+    notify-send "$message"
+  fi
+}
+
+function kill_container(){
+  if is_running; then
+    machinectl -q terminate "$label"
+    # wait for other session to properly shut down
+    # FIXME: avoid possible deadlock
+    while pidof -qo %PPID -x "$0"; do
+      sleep 1
+    done
+  fi
+}
+
+function launch_container(){
+  # if a garbage program didn't terminate like it should in a previous session, kill it
+  kill_container
+
+  # https://wiki.archlinux.org/title/systemd-nspawn#Use_an_X_environment
+  xhost +local: > /dev/null
+
+  # bind most devices apart from block devices and a few others inside
+  # container for gpu access, camera, ...
+  local omit='/dev/\(console\|pts/.*\|ptmx\|std.*\)'
+  mapfile -t < <(find /dev -xtype c,f ! -regex "$omit" -printf "--bind=%p\n")
+
+  systemd-nspawn \
+    --quiet \
+    --user=$user \
+    --setenv=DISPLAY="$DISPLAY" \
+    --setenv=DRI_PRIME="$DRI_PRIME" \
+    --setenv=__NV_PRIME_RENDER_OFFLOAD="$__NV_PRIME_RENDER_OFFLOAD" \
+    --setenv=__VK_LAYER_NV_optimus="$__VK_LAYER_NV_optimus" \
+    --setenv=__GLX_VENDOR_LIBRARY_NAME="$__GLX_VENDOR_LIBRARY_NAME" \
+    --setenv=PULSE_SERVER=unix:/run/user/host/pulse/native \
+    --bind=/run/user/1000/pulse:/run/user/host/pulse \
+    --bind=/tmp/.X11-unix \
+    "${MAPFILE[@]//:/\\:}" \
+    --as-pid2 \
+    --image=/dev/mapper/$label "$@"
+
+  xhost -local: > /dev/null
+}
+
+function check_user(){
+  # make sure that the script is run as root
+  if [[ $EUID -ne 0 ]]; then
+      exec sudo -E "$0" "$@"
+  fi
+}
+
+case "$1" in
+  --mount|-m)
+    check_user "$@"
+    unlock_device
+    mount_device
+    ;;
+  --umount|-u)
+    check_user "$@"
+    umount_device
+    ;;
+  --notify|-n)
+    notify_status
+    ;;
+  --kill|-k)
+    check_user "$@"
+    kill_container
+    ;;
+  *)
+    check_user "$@"
+    unlock_device
+    launch_container "$@"
+    ;;
+esac

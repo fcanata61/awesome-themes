@@ -1,0 +1,49 @@
+#!/bin/bash
+
+###############################################################################
+#                         Invoke BSC Compiler over SSH                        #
+###############################################################################
+
+ssh_server=ISP-Pool
+directory_size_limit=10M
+directory=$(mktemp -du --tmpdir tmp.bluespec.XXXXXXXXXX)
+pre_exec="export PATH=\$PATH:/opt/bluespec/bin && \
+  export BLUESPECDIR=/opt/bluespec/lib && \
+  export LM_LICENSE_FILE=27000@licence.rbg.informatik.tu-darmstadt.de"
+
+function exec_remote(){
+  ssh -q $ssh_server "$pre_exec && cd $directory && $*"
+}
+
+function copy_to_remote(){
+  scp -pqr "$@" $ssh_server:"$directory"
+}
+
+function copy_from_remote(){
+  scp -pqr $ssh_server:"$directory/{$*}" "$PWD" 
+}
+
+function check(){
+  local directory_byte_size directory_byte_size_limit
+  directory_byte_size=$(du -sb "$PWD" | awk '{print $1;}')
+  directory_byte_size_limit=$(numfmt --from=iec $directory_size_limit)
+
+  if [[ $directory_byte_size -gt $directory_byte_size_limit ]]; then
+    echo "directory exceeds size limit of $directory_size_limit! Aborting."
+    exit 1
+  fi
+}
+
+check
+copy_to_remote "$PWD"
+last_modified=$(exec_remote \
+  "stat -c '%Y' \$(find * -type f) | sort -nr | head -n 1")
+exec_remote "bsc $*"
+files_to_copy=$(exec_remote \
+  "for file in \$(find * -type f); do \
+     if [[ \$(stat -c '%Y' \"\$file\") -gt $last_modified ]]; then \
+       printf '%q,' \"\$file\"; \
+     fi \
+   done")
+copy_from_remote "${files_to_copy%?}"
+exec_remote "rm -r \$PWD"

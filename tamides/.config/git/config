@@ -1,0 +1,34 @@
+[user]
+  name = Jonas Belouadi
+  email = 53401822+potamides@users.noreply.github.com
+[core]
+  quotepath = false
+  askPass = ""
+[commit]
+  verbose = true
+[diff]
+  mnemonicPrefix = true
+[pull]
+  rebase = false
+[help]
+  autoCorrect = "prompt"
+[merge]
+  # tool = nvimdiff2
+  tool = fugitive
+[mergetool "fugitive"]
+  cmd = nvim -c "Gvdiffsplit!" "$MERGED"
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+[url "ssh://git@github.com/"]
+  pushInsteadOf = https://github.com/
+[url "ssh://git@gitlab.com/"]
+  pushInsteadOf = https://gitlab.com/
+[url "ssh://git@hf.co/"]
+  pushInsteadOf = https://huggingface.co/
+[protocol "file"]
+  allow = always
+[include]
+  path = config.local
