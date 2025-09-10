@@ -1,0 +1,74 @@
+#   ______     __  __     __  __     __  __     _____    
+#  /\  ___\   /\_\_\_\   /\ \_\ \   /\ \/ /    /\  __-.  
+#  \ \___  \  \/_/\_\/_  \ \  __ \  \ \  _"-.  \ \ \/\ \ 
+#   \/\_____\   /\_\/\_\  \ \_\ \_\  \ \_\ \_\  \ \____- 
+#    \/_____/   \/_/\/_/   \/_/\/_/   \/_/\/_/   \/____/ 
+#
+# ALT key for general hotkeys
+
+# WM AGNOSTIC COMMANDS
+# ========================================================
+alt + period
+  ~/.config/polybar/scripts/powermenu
+
+# Launch Specific Programs
+# ========================================================
+alt + BackSpace; semicolon
+	kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float bpytop
+
+alt + BackSpace; b
+  kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float nvim ~/Documents/Notes/Inbox/Bench.md
+
+alt + BackSpace; w
+  kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float nvim ~/Documents/Warrior/genesis-block/index.md
+
+alt + BackSpace; h
+  kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float dijo
+
+alt + BackSpace; greater
+  kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float --hold
+
+alt + BackSpace; asciitilde
+  kitty zk projects
+
+alt + BackSpace; dollar
+  kitty --config ~/.config/kitty/kitty-float.conf --class kitty-float nvim ~/Documents/Notes/$(date +%Y)-journal.beancount
+
+alt + t
+  kitty @ --to=unix:/tmp/kitty-tasks send_text "clear && task\r"; \
+  bspc desktop '8' -f; \
+  bspc node local.locked -f
+
+# terminal emulator
+alt + Return
+	kitty
+
+# program launcher
+alt + d
+	rofi -show drun -show-icons -location 0 -yoffset -250
+
+alt + f; e
+  rofi -show emoji -modi emoji
+
+alt + f; d
+  delta-emoji-picker
+
+alt + f; c
+  rofi -show calc -modi calc -no-show-match -no-sort
+
+# screenshot
+alt + shift + 4
+  flameshot screen -p ~/Desktop
+
+alt + shift + 3
+  flameshot gui
+
+# Reload programs
+# ========================================================
+
+# SXHKD
+alt + r; Escape
+	pkill -USR1 -x sxhkd && notify-send "Reloaded sxhkd" -i reload
+
+alt + r; p
+ polybar-msg cmd restart && notify-send "Reloaded polybar" -i reload

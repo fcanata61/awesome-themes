@@ -1,0 +1,69 @@
+[user]
+        name = Stephen Bolton
+        email = stephen@bitsonthemind.com
+        username = skbolton
+        signingkey = 0x60410414D406AF1D
+
+[init]
+        defaultBranch = main
+
+[alias]
+        l = log --date=short --decorate --pretty=format:"%C(yellow)%h\\ %C(green)%ad%C(magenta)%d\\ %Creset%s%C(brightblue)\\ [%cn]"
+        dog = log --all --decorate --oneline --graph
+        to = "!git checkout $(git branches --no-multi)"
+        drop = "!git branch -d $(git branches --multi)"
+        st = status
+        p = pull
+        pp = push
+        c = commit
+        cm = commit -m
+        can = commit --amend --no-edit
+        co = checkout
+        default = !git remote show origin | rg 'HEAD branch' | cut -d ' ' -f5
+        back = reset HEAD~1
+        backk = reset HEAD~1 --hard
+        files = !git diff --name-only $(git merge-base HEAD \"$REVIEW_BASE\")
+        stat = !git diff --stat $(git merge-base HEAD \"$REVIEW_BASE\")
+        review = !nvim -p $(git files) +\"tabdo Gdiff $REVIEW_BASE\" +\"let g:gitgutter_diff_base = '$REVIEW_BASE'\"
+        feature = !sh -c 'git switch --no-track -c $1 origin/${BASE_GIT_BRANCH-main}' -
+        catchup = !sh -c 'git rebase origin/${BASE_GIT_BRANCH-main}' -
+        what = "!git config --get-regexp alias"
+[diff]
+        algorithm = histogram
+
+[core]
+        pager = delta
+        editor = nvim
+        commentChar = "#"
+        excludesFile = ~/.config/git/gitignore
+
+[interactive]
+        diffFilter = delta --color-only
+
+[blame]
+        date = relative
+
+[rebase]
+        autosquash = true
+[pull]
+        ff = only
+
+[commit]
+        verbose = true
+        gpgsign = true
+        template = ~/.config/git/commit-template
+
+[status]
+        showUntrackedFiles = all
+
+[merge]
+        conflictstyle = diff3
+
+[delta]
+        navigate = true
+        minus-style = "auto #411E35"
+        plus-style = "auto #133246"
+        light = false
+        side-by-side = true
+        line-numbers = true
+        syntax-theme = base16-256

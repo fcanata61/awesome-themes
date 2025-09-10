@@ -1,0 +1,91 @@
+local awful_util = require("awful.util")
+
+
+local local_config = {}
+
+function local_config.init(awesome_context)
+
+  local conf = awesome_context.config
+  conf.wlan_if = 'wlp4s0'
+  conf.eth_if = 'enp0s25'
+  conf.net_preset = 'systemd'
+  conf.music_players = { 'spotify', 'clementine', 'mopidy' }
+  --conf.music_players = { 'mopidy', }
+
+  --awesome_context.theme_dir = awful_util.getdir("config") .. "/themes/lcars-xresources-hidpi/theme.lua"
+  --awesome_context.theme_dir = awful_util.getdir("config") .. "/themes/twmish/theme.lua"
+  awesome_context.theme_dir = awful_util.getdir("config") .. "/themes/gtk/theme.lua"
+
+  --awesome_context.autorun = {
+    --"~/.scripts/tp_unmute",
+    --"killall compton ; compton",
+  --}
+
+  awesome_context.have_battery = false
+
+  --awesome_context.sensors = {
+  --  cpu = {
+  --    device = 'coretemp-isa-0000',
+  --    sensor = 'Package id 0',
+  --    sensor_input = 'temp1',
+  --    warning = 90,
+  --  },
+  --  cpu0 = {
+  --    device = 'coretemp-isa-0000',
+  --    sensor = 'Core 0',
+  --    sensor_input = 'temp2',
+  --    warning = 90,
+  --  },
+  --  cpu1 = {
+  --    device = 'coretemp-isa-0000',
+  --    sensor = 'Core 1',
+  --    sensor_input = 'temp3',
+  --    warning = 90,
+  --  },
+  --}
+
+  --conf.disk_warnings = {
+  --  ['*'] = {
+  --    pcent=90,
+  --    avail=10485760,  -- 10GiB
+  --  },
+  --  ['/dev/sda8'] = {
+  --    pcent=80,
+  --    avail=10485760,  -- 10GiB
+  --  }
+  --}
+
+
+  awesome_context.before_config_loaded[#(awesome_context.before_config_loaded)+1] = function()
+    -- size fixes for Fanstasque Sans Mono:
+    local beautiful = require("beautiful")
+    beautiful.font = "Monospace Bold 11"
+    beautiful.tasklist_font = "Monospace 11"
+    beautiful.panel_widget_font = beautiful.tasklist_font
+    beautiful.taglist_font =  beautiful.font
+    beautiful.titlebar_font =  beautiful.font
+    beautiful.sans_font = "Sans 11"
+  end
+
+  --awesome_context.after_config_loaded[#(awesome_context.after_config_loaded)+1] = function()
+  --end
+
+  --local modkey = awesome_context.modkey
+  --awesome_context.extra_global_keys[
+  --  #(awesome_context.extra_global_keys)+1
+  --] = awful.key({modkey}, "Page_Up", function ()
+  --  awesome_context.widgets.volume.Up()
+  --end)
+  --awesome_context.extra_global_keys[
+  --  #(awesome_context.extra_global_keys)+1
+  --] = awful.key({modkey}, "Page_Down", function ()
+  --  awesome_context.widgets.volume.Down()
+  --end)
+
+  return awesome_context
+end
+
+return local_config
+
+
+-- vim: set ft=lua:

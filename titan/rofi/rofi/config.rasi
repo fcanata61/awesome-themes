@@ -1,0 +1,6 @@
+configuration {
+  font: "Stella 14";
+  icon-theme: "Tela";
+}
+
+@theme "embark"

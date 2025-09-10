@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+shopt -s nullglob
+shopt -s globstar
+
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}"/dotfiles.conf ] \
+    && . "${XDG_CONFIG_HOME:-$HOME/.config}"/dotfiles.conf
+export GIT_DIR="$dotfiles_dir"
+
+readonly cmd="$1"
+shift
+
+case $cmd in
+
+    vim)
+        cd ~/.vim
+        vim \
+            ~/.vimrc \
+            ~/.vim/after/**/* \
+            ~/.vim/autoload/* \
+            ~/.vim/syntax/* \
+            "$@"
+        ;;
+
+    tmux)
+        cd ~/.config/tmux
+        vim \
+            ~/.tmux.conf \
+            ~/.config/tmux/**/* \
+            "$@"
+        ;;
+
+    git)
+        vim \
+            ~/.gitconfig \
+            ~/.gitignore \
+            ~/.gitmodules \
+            ~/.ignore \
+            ~/.bin/git-* \
+            ~/.config/git/hooks/**/* \
+            "$@"
+        ;;
+
+    aur|aurutils)
+        cd ~/.bin
+        vim \
+            ~/.bin/aur-* \
+            "$@"
+        ;;
+
+    zsh)
+        cd ~/.config/zsh
+        vim \
+            ~/.zshrc \
+            ~/.config/zsh/* \
+            ~/.zprofile \
+            ~/.profile \
+            "$@"
+        ;;
+
+    bash)
+        cd ~/.config/bash
+        vim \
+            ~/.bashrc \
+            ~/.config/bash/* \
+            ~/.bash_profile \
+            ~/.profile \
+            "$@"
+        ;;
+
+    aw|awesome)
+        cd ~/.config/awesome
+        vim \
+            ~/.config/awesome/rc.lua \
+            ~/.config/awesome/themes/blackout/theme.lua \
+            ~/.config/awesome/themes/whiteout/theme.lua \
+            ~/.config/awesome/config/**/* \
+            ~/.config/awesome/widgets/**/* \
+            ~/.config/awesome/yaawl/* \
+            ~/.config/awesome/yaawl/subject/* \
+            ~/.config/awesome/yaawl/util/* \
+            "$@"
+        ;;
+
+    xorg)
+        vim \
+            ~/.xinitrc \
+            "$@"
+        ;;
+
+    gdb)
+        cd ~/.gdbinit.d
+        vim \
+            ~/.gdbinit \
+            ~/.gdbinit.d/**/* \
+            "$@"
+        ;;
+
+    bin)
+        cd ~/.bin
+        vim \
+            ~/.bin/* \
+            "$@"
+        ;;
+
+    conf)
+        cd ~/.bin
+        vim "$0"
+        ;;
+
+    *)
+        vim "$cmd" "$@"
+        ;;
+
+esac

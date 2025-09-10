@@ -1,0 +1,42 @@
+#!/bin/zsh
+
+alias v="nvim"
+alias aqua="Asciiquarium"
+alias cat="bat --paging=never"
+alias mv="mv -iv"
+alias cp="cp -iv"
+alias rm="rm -v"
+alias notes="cd ~/Documents/Notes && nvim +ZkNotes"
+
+alias mux="tmux"
+alias muxk="tmux kill-server"
+alias muxa="tmux a"
+
+# Task warrior tooling
+alias t="task"
+alias tap="task context personal"
+alias taw="task context work"
+alias tw="timew"
+alias buy="task add +buy"
+alias shop="task add +shop"
+alias chore="task add proj:Home" 
+alias chores="task proj:Home list"
+alias pdq="task add proj:PDQ"
+alias idea="task add +idea"
+alias ideas="task +idea"
+alias bce="$EDITOR $HOME/Documents/Notes/journal.beancount"
+alias de="cd ~/Documents/Notes"
+alias gb="cd ~/Documents/GenesisBlock"
+
+# Elixir Goodies
+alias m="iex -S mix"
+alias ms="iex -S mix phx.server"
+alias mdg="mix deps.get"
+alias mdc="mix deps.clean --all"
+
+# use exa for ls
+alias ls='exa -a --icons --color=always --group-directories-first'
+alias la='exa -al --icons --color=always --group-directories-first'
+alias ll='exa -l --icons --color=always --group-directories-first'
+alias lt='exa -aT --icons --color=always --group-directories-first'
+

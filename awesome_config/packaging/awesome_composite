@@ -1,0 +1,34 @@
+#!/bin/bash
+
+SCREENLAYOUT_SCRIPT=~/.screenlayout/default.sh
+CACHEDIR="$HOME"/.cache
+PROFILE_FILE=$HOME/.profile
+
+if test -f "$PROFILE_FILE" ; then
+	# shellcheck disable=SC1090
+	. "$PROFILE_FILE"
+fi
+
+if test -f "$SCREENLAYOUT_SCRIPT" ; then
+    "$SCREENLAYOUT_SCRIPT"
+fi
+
+if test ! -d "${CACHEDIR}" ; then
+    mkdir -p "${CACHEDIR}"
+fi
+
+while true ; do
+    code=0
+    picom --experimental-backends >> "${CACHEDIR}/picom_stdout" 2>> "${CACHEDIR}/picom_stderr" &
+	sleep 0.2
+    awesome "$@" >> "${CACHEDIR}/awesome_stdout" 2>> "${CACHEDIR}/awesome_stderr" || code=$?
+	killall picom
+    if [ ${code} -eq 2 ] ; then
+        awesome --no-argb "$@" >> "${CACHEDIR}/awesome_stdout" 2>> "${CACHEDIR}/awesome_stderr"
+    elif [ ${code} -eq 9 ] ; then
+        exit $code
+    elif [ ${code} -ne 0 ] ; then
+        (sleep 1 ; openbox) || xterm
+        sleep 1
+    fi
+done
